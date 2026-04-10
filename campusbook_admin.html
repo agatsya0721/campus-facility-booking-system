@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unicentri Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0f1e;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: rgba(99,179,237,0.12);
+    --accent: #63b3ed;
+    --accent2: #f6ad55;
+    --accent3: #68d391;
+    --danger: #fc8181;
+    --purple: #b794f4;
+    --text: #e8f0fe;
+    --muted: #8899aa;
+    --card-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 32px; height: 64px;
+    background: rgba(10,15,30,0.92); backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; color: var(--accent); display: flex; align-items: center; gap: 8px; }
+  .nav-logo span { color: var(--text); }
+  .admin-badge {
+    background: rgba(183,148,244,0.15); border: 1px solid rgba(183,148,244,0.3);
+    color: var(--purple); font-size: 0.7rem; font-weight: 700; padding: 3px 10px;
+    border-radius: 6px; text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .nav-right { display: flex; align-items: center; gap: 10px; }
+  .btn {
+    padding: 8px 18px; border-radius: 8px; font-size: 0.875rem; font-weight: 600;
+    cursor: pointer; border: none; font-family: 'DM Sans', sans-serif;
+  }
+  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .btn-ghost:hover { color: var(--text); border-color: rgba(99,179,237,0.35); }
+  .btn-primary { background: var(--accent); color: #0a0f1e; }
+  .btn-success { background: var(--accent3); color: #0a0f1e; }
+  .btn-danger { background: var(--danger); color: #0a0f1e; }
+  .btn-sm { padding: 6px 14px; font-size: 0.78rem; }
+  .main { padding-top: 64px; }
+  .hero {
+    padding: 44px 32px 32px;
+    border-bottom: 1px solid var(--border);
+    background:
+      radial-gradient(ellipse 60% 80% at 0% 50%, rgba(183,148,244,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 100% 50%, rgba(99,179,237,0.06) 0%, transparent 60%);
+  }
+  .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 800; }
+  .hero h1 em { font-style: normal; color: var(--purple); }
+  .hero p { color: var(--muted); margin-top: 8px; }
+  .hero-meta { margin-top: 8px; font-size: 0.8rem; color: var(--muted); }
+  .stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px; padding: 28px 32px;
+  }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; }
+  .stat-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; }
+  .stat-value { font-family: 'Syne', sans-serif; font-size: 2rem; margin-top: 6px; font-weight: 800; }
+  .stat-value.pending { color: var(--accent2); }
+  .stat-value.approved { color: var(--accent3); }
+  .stat-value.rejected { color: var(--danger); }
+  .content { padding: 0 32px 40px; max-width: 1200px; margin: 0 auto; }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 24px; }
+  .panel-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+  .panel-title { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; }
+  .requests-list { display: flex; flex-direction: column; gap: 12px; }
+  .request-card { background: rgba(26,34,53,0.55); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; }
+  .request-card.pending { border-left: 3px solid var(--accent2); }
+  .request-card.approved { border-left: 3px solid var(--accent3); }
+  .request-card.rejected { border-left: 3px solid var(--danger); }
+  .request-top { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+  .request-top h4 { font-family: 'Syne', sans-serif; font-size: 1rem; }
+  .request-sub { color: var(--muted); font-size: 0.82rem; margin-top: 4px; line-height: 1.5; }
+  .request-meta { display: flex; gap: 14px; flex-wrap: wrap; color: var(--muted); font-size: 0.78rem; margin-top: 8px; }
+  .request-purpose { margin-top: 14px; padding: 12px; background: var(--surface2); border-radius: 10px; color: var(--muted); font-size: 0.84rem; line-height: 1.6; }
+  .request-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 999px;
+    font-size: 0.75rem; font-weight: 700;
+  }
+  .status-badge.pending { background: rgba(246,173,85,0.14); color: var(--accent2); }
+  .status-badge.approved { background: rgba(104,211,145,0.14); color: var(--accent3); }
+  .status-badge.rejected { background: rgba(252,129,129,0.14); color: var(--danger); }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block; }
+  .empty-state { text-align: center; padding: 46px 20px; color: var(--muted); }
+  .toast {
+    position: fixed; bottom: 24px; right: 24px; z-index: 999;
+    background: var(--accent3); color: #0a0f1e; padding: 14px 24px; border-radius: 12px; font-weight: 700;
+    transform: translateY(80px); opacity: 0; transition: all 0.35s;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  @media(max-width:768px) {
+    nav { padding: 0 18px; }
+    .hero, .stats, .content { padding-left: 18px; padding-right: 18px; }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo">📍 Unicentri <span class="admin-badge">Admin</span></div>
+  <div class="nav-right">
+    <div style="text-align:right;line-height:1.2;">
+      <div id="adminProfileName" style="font-weight:700;font-size:0.85rem;color:var(--text);">Admin</div>
+      <div id="adminProfileMeta" style="font-size:0.72rem;color:var(--muted);">Unicentri Facilities Office</div>
+    </div>
+    <button class="btn btn-ghost" onclick="returnToHome()">Home</button>
+    <button class="btn btn-ghost" onclick="logoutAdmin()">Log Out</button>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="hero">
+    <h1>Admin <em>Request Console</em></h1>
+    <p>Review booking requests in real time and take the right action for each situation.</p>
+    <div class="hero-meta">Live sync every 8 seconds · <span id="adminLastSync">--</span></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-label">Pending Requests</div>
+      <div class="stat-value pending" id="statPending">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Approved</div>
+      <div class="stat-value approved" id="statApproved">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Rejected / Cancelled</div>
+      <div class="stat-value rejected" id="statRejected">0</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="panel" style="margin-bottom:22px;">
+      <div class="panel-header">
+        <div class="panel-title">Student Event Strip</div>
+        <button class="btn btn-primary btn-sm" onclick="saveAnnouncement()">Save Strip</button>
+      </div>
+      <div style="display:grid;gap:12px;">
+        <input id="announcementTitle" type="text" placeholder="Strip title" style="width:100%;padding:12px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font:inherit;outline:none;">
+        <textarea id="announcementMessage" placeholder="Write the college event or admin message students should see..." style="width:100%;min-height:110px;padding:12px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font:inherit;outline:none;resize:vertical;"></textarea>
+        <input id="announcementLink" type="text" placeholder="Optional link, e.g. https://its.edu.in/events/fest" style="width:100%;padding:12px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font:inherit;outline:none;">
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Booking Requests</div>
+        <button class="btn btn-primary btn-sm" onclick="loadAdminBookings()">Refresh</button>
+      </div>
+      <div class="requests-list" id="adminRequestsList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="app.config.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>
