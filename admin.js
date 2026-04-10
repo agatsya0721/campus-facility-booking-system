@@ -198,18 +198,18 @@ async function saveAnnouncement() {
 }
 
 function returnToHome() {
-  window.location.href = "uch.html";
+  window.location.href = "index.html";
 }
 
 function logoutAdmin() {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(USER_KEY);
-  window.location.href = "uch.html";
+  window.location.href = "index.html";
 }
 
 (async function initAdmin() {
   if (!currentUser || !authToken || currentUser.role !== "admin") {
-    window.location.href = "uch.html";
+    window.location.href = "index.html";
     return;
   }
 
